@@ -31,25 +31,47 @@ const ShoeCard = ({
       ? 'new-release'
       : 'default'
 
+  const bannerCopy = variant === 'on-sale'
+    ? 'Sale'
+    : variant === 'new-release'
+      ? 'Just Released!'
+      : ''
+
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
+          {(variant === 'on-sale' || variant === 'new-release') && (
+            <Banner variant={variant}>{bannerCopy}</Banner>
+          )}
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price variant={variant}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          {variant === 'on-sale' && (<SalePrice>{formatPrice(price)}</SalePrice>)}
         </Row>
       </Wrapper>
     </Link>
   );
 };
 
+const Banner = styled.div`
+  position: absolute;
+  top: 10px;
+  right: -10px;
+  width: fit-content;
+  padding: 7px 9px;
+  border-radius: 2px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  background-color: ${p => p.variant === 'on-sale' ? COLORS.primary : COLORS.secondary};
+`
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
@@ -80,7 +102,10 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: ${p => (p.variant === 'on-sale' ? COLORS.gray[700] : COLORS.gray[900])};
+  text-decoration: ${p => (p.variant === 'on-sale' ? 'line-through' : 'none')};
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
